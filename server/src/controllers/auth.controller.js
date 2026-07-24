@@ -12,10 +12,12 @@ import { env } from "../config/env.js";
 
 const REFRESH_COOKIE_NAME = "refreshToken";
 
+const isProduction = env.nodeEnv === "production";
+
 const cookieOptions = {
   httpOnly: true,
-  secure: env.nodeEnv === "production",
-  sameSite: "strict",
+  secure: isProduction,
+  sameSite: isProduction ? "none" : "lax",
   maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
 };
 
@@ -55,8 +57,8 @@ export const login = asyncHandler(async (req, res) => {
         accessToken,
         user: { id: user._id, username: user.username, role: user.role },
       },
-      "Logged in successfully"
-    )
+      "Logged in successfully",
+    ),
   );
 });
 
@@ -155,7 +157,7 @@ export const updateCredentials = asyncHandler(async (req, res) => {
       new ApiResponse(
         200,
         { username: user.username },
-        "Credentials updated successfully"
-      )
+        "Credentials updated successfully",
+      ),
     );
 });
