@@ -1,0 +1,52 @@
+@import "tailwindcss";
+
+/**
+ * Clean SaaS identity — slate neutrals + indigo accent, Inter type.
+ * Restraint over ornament: hierarchy comes from spacing, weight, and
+ * color, not decorative elements.
+ */
+@theme {
+  --color-bg: #f8fafc;
+  --color-surface: #ffffff;
+  --color-dark: #0f172a;        /* sidebar (desktop) / bottom nav (mobile) */
+  --color-ink: #0f172a;
+  --color-muted: #64748b;
+  --color-border: #e2e8f0;
+
+  --color-primary: #4f46e5;
+  --color-primary-hover: #4338ca;
+  --color-success: #059669;
+  --color-warning: #d97706;
+  --color-error: #dc2626;
+
+  --font-display: "Inter", sans-serif;
+  --font-body: "Inter", sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+
+  --radius-md: 8px;
+  --shadow-card: 0 1px 2px rgba(15, 23, 42, 0.04), 0 1px 3px rgba(15, 23, 42, 0.06);
+  --shadow-elevated: 0 4px 6px rgba(15, 23, 42, 0.05), 0 10px 15px rgba(15, 23, 42, 0.08);
+}
+
+@layer base {
+  body {
+    @apply bg-bg text-ink font-body antialiased;
+  }
+
+  h1, h2, h3, h4 {
+    @apply font-display text-ink font-semibold tracking-tight;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
