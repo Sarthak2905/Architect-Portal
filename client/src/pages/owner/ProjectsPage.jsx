@@ -14,6 +14,9 @@ import {
     useArchiveProject,
     useRestoreProject,
 } from "../../api/hooks/useProjects";
+import { FolderKanban } from "lucide-react";
+import { ListSkeleton } from "../../components/owner/ListSkeleton";
+import { EmptyState } from "../../components/ui/EmptyState";
 
 export const ProjectsPage = () => {
     const [search, setSearch] = useState("");
@@ -109,9 +112,13 @@ export const ProjectsPage = () => {
             </div>
 
             {isLoading ? (
-                <p className="text-sm text-muted text-center py-8">Loading projects...</p>
+                <ListSkeleton rows={4} />
             ) : !data?.projects?.length ? (
-                <p className="text-sm text-muted text-center py-8">No projects found.</p>
+                <EmptyState
+                    icon={FolderKanban}
+                    title="No projects yet"
+                    description={search ? "Try a different search term." : "Create your first project to get started."}
+                />
             ) : (
                 <div className="flex flex-col gap-3">
                     {data.projects.map((project) => (

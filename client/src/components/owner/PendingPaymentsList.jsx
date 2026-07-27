@@ -1,17 +1,20 @@
 import { Card } from "../ui/Card";
 import { Badge } from "../ui/Badge";
+import { EmptyState } from "../ui/EmptyState";
+import { ListSkeleton } from "./ListSkeleton";
 import { formatCurrency } from "../../utils/formatters";
+import { CheckCircle2 } from "lucide-react";
 
 export const PendingPaymentsList = ({ payments, isLoading }) => {
-    if (isLoading) {
-        return <Card className="text-sm text-muted">Loading pending payments...</Card>;
-    }
+    if (isLoading) return <ListSkeleton rows={3} />;
 
     if (!payments?.length) {
         return (
-            <Card className="text-sm text-muted text-center py-8">
-                No pending payments — everything is settled.
-            </Card>
+            <EmptyState
+                icon={CheckCircle2}
+                title="All settled"
+                description="No pending payments right now."
+            />
         );
     }
 

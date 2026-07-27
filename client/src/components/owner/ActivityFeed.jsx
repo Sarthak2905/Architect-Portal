@@ -1,16 +1,19 @@
 import { Card } from "../ui/Card";
+import { EmptyState } from "../ui/EmptyState";
+import { ListSkeleton } from "./ListSkeleton";
 import { formatRelativeTime } from "../../utils/formatters";
+import { Activity } from "lucide-react";
 
 export const ActivityFeed = ({ activity, isLoading }) => {
-    if (isLoading) {
-        return <Card className="text-sm text-muted">Loading recent activity...</Card>;
-    }
+    if (isLoading) return <ListSkeleton rows={4} />;
 
     if (!activity?.length) {
         return (
-            <Card className="text-sm text-muted text-center py-8">
-                No activity yet — updates will show up here.
-            </Card>
+            <EmptyState
+                icon={Activity}
+                title="No activity yet"
+                description="Updates will show up here as you work on projects."
+            />
         );
     }
 

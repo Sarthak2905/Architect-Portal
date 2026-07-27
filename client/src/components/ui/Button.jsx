@@ -19,6 +19,7 @@ export const Button = ({
     className,
     children,
     disabled,
+    isLoading,
     ...props
 }) => {
     return (
@@ -29,7 +30,8 @@ export const Button = ({
                 SIZES[size],
                 className
             )}
-            disabled={disabled}
+            disabled={disabled || isLoading}
+            aria-busy={isLoading || undefined}
             {...props}
         >
             {children}

@@ -12,6 +12,9 @@ import {
     useDeactivateClient,
     useReactivateClient,
 } from "../../api/hooks/useClients";
+import { Users } from "lucide-react";
+import { ListSkeleton } from "../../components/owner/ListSkeleton";
+import { EmptyState } from "../../components/ui/EmptyState";
 
 export const ClientsPage = () => {
     const [search, setSearch] = useState("");
@@ -81,9 +84,13 @@ export const ClientsPage = () => {
             </div>
 
             {isLoading ? (
-                <p className="text-sm text-muted text-center py-8">Loading clients...</p>
+                <ListSkeleton rows={4} />
             ) : !data?.clients?.length ? (
-                <p className="text-sm text-muted text-center py-8">No clients found.</p>
+                <EmptyState
+                    icon={Users}
+                    title="No clients yet"
+                    description={search ? "Try a different search term." : "Add your first client to get started."}
+                />
             ) : (
                 <div className="flex flex-col gap-3">
                     {data.clients.map((client) => (
