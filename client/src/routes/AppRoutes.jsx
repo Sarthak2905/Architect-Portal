@@ -3,6 +3,7 @@ import { LoginPage } from "../pages/owner/LoginPage";
 import { DashboardPage } from "../pages/owner/DashboardPage";
 import { ClientsPage } from "../pages/owner/ClientsPage";
 import { ProjectsPage } from "../pages/owner/ProjectsPage";
+import { ProjectDetailPage } from "../pages/owner/ProjectDetailPage";
 import { ProtectedRoute } from "./ProtectedRoute";
 import { OwnerLayout } from "../layouts/OwnerLayout";
 
@@ -21,7 +22,8 @@ export const AppRoutes = () => {
                 <Route path="/dashboard" element={<DashboardPage />} />
                 <Route path="/clients" element={<ClientsPage />} />
                 <Route path="/projects" element={<ProjectsPage />} />
-                {/* Phase F6 will add: <Route path="/projects/:id" element={<ProjectDetailPage />} /> */}
+                <Route path="/projects/:id" element={<ProjectDetailPage />} />
+                {/* Phase F7 will add payments to this same detail page as a new tab */}
             </Route>
 
             <Route path="/" element={<Navigate to="/dashboard" replace />} />

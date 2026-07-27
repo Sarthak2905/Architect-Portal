@@ -5,13 +5,18 @@ import { Badge } from "../ui/Badge";
 import { STATUS_BADGE_TONE } from "../../utils/projectStatuses";
 import { formatCurrency } from "../../utils/formatters";
 import { useClickOutside } from "../../api/hooks/useClickOutside";
+import { useNavigate } from "react-router-dom";
 
 export const ProjectCard = ({ project, onEdit, onArchive, onRestore, onUpdateStatus }) => {
     const [menuOpen, setMenuOpen] = useState(false);
     const menuRef = useClickOutside(() => setMenuOpen(false));
+    const navigate = useNavigate();
 
     return (
-        <Card className="flex items-start justify-between gap-3">
+        <Card
+            className="flex items-start justify-between gap-3 cursor-pointer hover:border-primary transition-colors"
+            onClick={() => navigate(`/projects/${project._id}`)}
+        >
             <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-2 flex-wrap">
                     <p className="font-medium truncate">{project.title}</p>
@@ -28,7 +33,10 @@ export const ProjectCard = ({ project, onEdit, onArchive, onRestore, onUpdateSta
 
             <div className="relative shrink-0" ref={menuRef}>
                 <button
-                    onClick={() => setMenuOpen((v) => !v)}
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        setMenuOpen((v) => !v);
+                    }}
                     className="p-1.5 rounded-md text-muted hover:text-ink hover:bg-slate-100 transition-colors"
                     aria-label="More options"
                 >
@@ -36,7 +44,10 @@ export const ProjectCard = ({ project, onEdit, onArchive, onRestore, onUpdateSta
                 </button>
 
                 {menuOpen && (
-                    <div className="absolute right-0 mt-1 w-44 bg-surface border border-border rounded-md shadow-elevated z-10 overflow-hidden">
+                    <div
+                        onClick={(e) => e.stopPropagation()}
+                        className="absolute right-0 mt-1 w-44 bg-surface border border-border rounded-md shadow-elevated z-10 overflow-hidden"
+                    >
                         <button
                             onClick={() => {
                                 setMenuOpen(false);
