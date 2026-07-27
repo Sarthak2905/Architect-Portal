@@ -45,6 +45,7 @@ export const AddUpdateForm = ({ onSubmit, isSubmitting }) => {
                 placeholder="Flooring completed on 2nd floor"
             />
 
+            
             <div className="flex flex-col gap-1.5">
                 <label className="text-sm font-medium text-muted">Message (optional)</label>
                 <textarea
