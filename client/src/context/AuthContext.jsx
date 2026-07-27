@@ -3,14 +3,20 @@ import { axiosClient } from "../api/axiosClient";
 
 const AuthContext = createContext(null);
 
+const isPortalRoute = () => window.location.pathname.startsWith("/portal");
+
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
 
-    // On app load, if there's a stored access token, verify it's still
-    // valid (or refreshable) by calling /auth/me. This is what lets a
-    // page refresh keep you logged in instead of bouncing to /login.
     useEffect(() => {
+        // Portal pages are public and have nothing to do with owner auth —
+        // never attempt to verify/refresh an owner session there.
+        if (isPortalRoute()) {
+            setIsLoading(false);
+            return;
+        }
+
         const bootstrap = async () => {
             const token = localStorage.getItem("accessToken");
             if (!token) {

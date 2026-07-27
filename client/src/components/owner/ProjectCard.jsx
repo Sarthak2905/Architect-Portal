@@ -58,6 +58,17 @@ export const ProjectCard = ({ project, onEdit, onArchive, onRestore, onUpdateSta
                             Update status
                         </button>
                         <button
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                setMenuOpen(false);
+                                const url = `${window.location.origin}/portal/${project.portalAccessToken}`;
+                                navigator.clipboard.writeText(url);
+                            }}
+                            className="w-full text-left px-3 py-2 text-sm hover:bg-slate-50 transition-colors"
+                        >
+                            Copy portal link
+                        </button>
+                        <button
                             onClick={() => {
                                 setMenuOpen(false);
                                 onEdit(project);

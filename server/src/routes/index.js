@@ -14,14 +14,18 @@ const router = Router();
 router.use("/auth", authRoutes);
 router.use("/clients", clientRoutes);
 router.use("/projects", projectRoutes);
+router.use("/dashboard", dashboardRoutes);
+
+// Client portal is public (token-in-URL is the credential). It MUST be
+// mounted before any router that's mounted at "/" below — those apply
+// requireAuth unconditionally to every request that reaches them, so if
+// portal were mounted after them, it would get rejected as
+// unauthenticated before ever reaching its own routes.
+router.use("/portal", portalRoutes);
+
 router.use("/", updateRoutes);
 router.use("/", documentRoutes);
 router.use("/", paymentRoutes);
 router.use("/", notificationRoutes);
-router.use("/portal", portalRoutes);
-router.use("/dashboard", dashboardRoutes);
-
-// This was the last MVP feature (item 10 in your original MVP list).
-// Phase 11 is production hardening + deployment, not a new feature.
 
 export default router;

@@ -1,15 +1,18 @@
 import axios from "axios";
 
-export const API_BASE_URL =
-  import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+export const API_BASE_URL = "http://localhost:5000/api";
 
 export const axiosClient = axios.create({
   baseURL: API_BASE_URL,
-  withCredentials: true, // sends the httpOnly refresh-token cookie
+  withCredentials: true,
 });
 
-// Attach the access token to every request automatically.
 axiosClient.interceptors.request.use((config) => {
+  // Portal requests never need the owner's access token — they're
+  // authenticated purely by the token already in the URL path.
+  if (config.url?.startsWith("/portal")) {
+    return config;
+  }
   const token = localStorage.getItem("accessToken");
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
@@ -17,12 +20,6 @@ axiosClient.interceptors.request.use((config) => {
   return config;
 });
 
-/**
- * On a 401 (expired access token), try refreshing once using the
- * httpOnly cookie, then retry the original request. If refresh also
- * fails, clear the stored token and let the caller handle redirecting
- * to login (done in AuthContext).
- */
 let isRefreshing = false;
 let pendingQueue = [];
 
@@ -38,6 +35,13 @@ axiosClient.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
+
+    // Portal requests: a 401 here just means an invalid/inactive token
+    // in the URL — let the calling page show its own "not found" state.
+    // Never attempt an owner-session refresh or redirect for these.
+    if (originalRequest?.url?.startsWith("/portal")) {
+      return Promise.reject(error);
+    }
 
     if (error.response?.status !== 401 || originalRequest._retry) {
       return Promise.reject(error);
@@ -72,7 +76,10 @@ axiosClient.interceptors.response.use(
     } catch (refreshError) {
       processQueue(refreshError, null);
       localStorage.removeItem("accessToken");
-      window.location.href = "/login";
+      // Never force-redirect away from a portal page.
+      if (!window.location.pathname.startsWith("/portal")) {
+        window.location.href = "/login";
+      }
       return Promise.reject(refreshError);
     } finally {
       isRefreshing = false;
