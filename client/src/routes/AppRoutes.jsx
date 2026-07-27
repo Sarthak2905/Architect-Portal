@@ -46,5 +46,6 @@ export const AppRoutes = () => {
             <Route path="/" element={<Navigate to="/dashboard" replace />} />
             <Route path="*" element={<Navigate to="/dashboard" replace />} />
         </Routes>
+        
     );
 };
