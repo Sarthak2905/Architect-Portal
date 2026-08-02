@@ -33,7 +33,7 @@ export const whatsappTemplates = {
 
   payment_reminder: {
     templateName: "payment_reminder_notification",
-    languageCode: "en",
+    languageCode: "en_US", // <-- match whatever Meta actually shows
     buildComponents: ({ clientName, projectTitle, balanceDue }) => [
       {
         type: "body",

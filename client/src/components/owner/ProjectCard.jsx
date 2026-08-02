@@ -6,11 +6,21 @@ import { STATUS_BADGE_TONE } from "../../utils/projectStatuses";
 import { formatCurrency } from "../../utils/formatters";
 import { useClickOutside } from "../../api/hooks/useClickOutside";
 import { useNavigate } from "react-router-dom";
+import { ConfirmDialog } from "../ui/ConfirmDialog";
+import { useHardDeleteProject } from "../../api/hooks/useProjects";
 
 export const ProjectCard = ({ project, onEdit, onArchive, onRestore, onUpdateStatus }) => {
     const [menuOpen, setMenuOpen] = useState(false);
     const menuRef = useClickOutside(() => setMenuOpen(false));
     const navigate = useNavigate();
+    const [confirmOpen, setConfirmOpen] = useState(false);
+    const hardDeleteProject = useHardDeleteProject();
+
+    const handleHardDelete = async (e) => {
+        e.stopPropagation();
+        await hardDeleteProject.mutateAsync(project._id);
+        setConfirmOpen(false);
+    };
 
     return (
         <Card
@@ -98,9 +108,27 @@ export const ProjectCard = ({ project, onEdit, onArchive, onRestore, onUpdateSta
                                 Restore
                             </button>
                         )}
+                        <button
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                setMenuOpen(false);
+                                setConfirmOpen(true);
+                            }}
+                            className="w-full text-left px-3 py-2 text-sm text-error hover:bg-red-50 transition-colors border-t border-border"
+                        >
+                            Delete permanently
+                        </button>
                     </div>
                 )}
             </div>
+            <ConfirmDialog
+                isOpen={confirmOpen}
+                onClose={(e) => { e?.stopPropagation?.(); setConfirmOpen(false); }}
+                onConfirm={handleHardDelete}
+                title="Delete this project permanently?"
+                description={`This will permanently remove "${project.title}" along with all its updates, documents, photos, payments, and notification history — including files stored on Cloudinary. This cannot be undone.`}
+                isSubmitting={hardDeleteProject.isPending}
+            />
         </Card>
     );
 };

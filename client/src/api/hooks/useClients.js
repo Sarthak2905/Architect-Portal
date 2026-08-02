@@ -62,3 +62,14 @@ export const useReactivateClient = () => {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["clients"] }),
   });
 };
+
+export const useHardDeleteClient = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (id) => {
+      const { data } = await axiosClient.delete(`/clients/${id}/permanent`);
+      return data.data;
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["clients"] }),
+  });
+};

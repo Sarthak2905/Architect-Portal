@@ -3,11 +3,23 @@ import { useState } from "react";
 import { Card } from "../ui/Card";
 import { Badge } from "../ui/Badge";
 import { useClickOutside } from "../../api/hooks/useClickOutside";
-
+import { ConfirmDialog } from "../ui/ConfirmDialog";
+import { useHardDeleteClient } from "../../api/hooks/useClients";
 export const ClientCard = ({ client, onEdit, onDeactivate, onReactivate }) => {
     const [menuOpen, setMenuOpen] = useState(false);
     const menuRef = useClickOutside(() => setMenuOpen(false));
+    const [confirmOpen, setConfirmOpen] = useState(false);
+    const hardDeleteClient = useHardDeleteClient();
+    const [deleteError, setDeleteError] = useState("");
 
+    const handleHardDelete = async () => {
+        try {
+            await hardDeleteClient.mutateAsync(client._id);
+            setConfirmOpen(false);
+        } catch (err) {
+            setDeleteError(err.response?.data?.message || "Failed to delete client");
+        }
+    };
     return (
         <Card className="flex items-start justify-between gap-3">
             <div className="min-w-0 flex-1">
@@ -62,11 +74,29 @@ export const ClientCard = ({ client, onEdit, onDeactivate, onReactivate }) => {
                                 className="w-full text-left px-3 py-2 text-sm text-success hover:bg-emerald-50 transition-colors"
                             >
                                 Reactivate
-                            </button>
+                                </button>     
                         )}
+                        <button
+                            onClick={() => {
+                                setMenuOpen(false);
+                                setDeleteError("");
+                                setConfirmOpen(true);
+                            }}
+                            className="w-full text-left px-3 py-2 text-sm text-error hover:bg-red-50 transition-colors border-t border-border"
+                        >
+                            Delete permanently
+                        </button>
                     </div>
                 )}
             </div>
+            <ConfirmDialog
+                isOpen={confirmOpen}
+                onClose={() => setConfirmOpen(false)}
+                onConfirm={handleHardDelete}
+                title="Delete this client permanently?"
+                description={deleteError || `This will permanently remove ${client.name} from the database. This cannot be undone. You can only do this if the client has no projects.`}
+                isSubmitting={hardDeleteClient.isPending}
+            />
         </Card>
     );
 };

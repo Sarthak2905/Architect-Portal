@@ -3,6 +3,37 @@ import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { validateClientPayload } from "../validators/client.validator.js";
+import { Project } from "../models/Project.model.js";
+
+
+
+/**
+ * DELETE /api/clients/:id/permanent
+ * Real, irreversible delete. Blocked if the client still has ANY
+ * projects (active or archived) — those hold real project history, so
+ * they must be permanently deleted first, one at a time, before the
+ * client record itself can go.
+ */
+export const hardDeleteClient = asyncHandler(async (req, res) => {
+  const client = await Client.findById(req.params.id);
+  if (!client) {
+    throw new ApiError(404, "Client not found");
+  }
+
+  const projectCount = await Project.countDocuments({ client: client._id });
+  if (projectCount > 0) {
+    throw new ApiError(
+      400,
+      `This client has ${projectCount} project(s). Delete those first before deleting the client.`
+    );
+  }
+
+  await client.deleteOne();
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, null, "Client permanently deleted"));
+});
 
 /**
  * POST /api/clients

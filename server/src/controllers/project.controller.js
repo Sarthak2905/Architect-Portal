@@ -7,6 +7,52 @@ import { validateProjectPayload } from "../validators/project.validator.js";
 import { Update } from "../models/Update.model.js";
 import { sendNotification } from "../services/notification.service.js";
 import crypto from "crypto";
+import { Document } from "../models/Document.model.js";
+import { Payment } from "../models/Payment.model.js";
+import { Notification } from "../models/Notification.model.js";
+import { deleteFromCloudinary } from "../utils/uploadToCloudinary.js";
+
+/**
+ * DELETE /api/projects/:id/permanent
+ * Real, irreversible delete — removes the project AND every related
+ * record (updates, documents, payments, notifications), and purges
+ * each document's actual file from Cloudinary too. Unlike archiveProject
+ * (soft delete), there is no undo for this.
+ */
+export const hardDeleteProject = asyncHandler(async (req, res) => {
+  const project = await Project.findById(req.params.id);
+  if (!project) {
+    throw new ApiError(404, "Project not found");
+  }
+
+  // Delete every uploaded file from Cloudinary before removing the DB
+  // records that reference them — otherwise the files become orphaned
+  // and keep counting against your Cloudinary storage forever.
+  const documents = await Document.find({ project: project._id });
+  await Promise.all(
+    documents.map((doc) =>
+      deleteFromCloudinary(doc.cloudinaryPublicId, doc.resourceType).catch((err) => {
+        // Don't let one failed Cloudinary delete block the rest of the
+        // cleanup — log it and continue; a stray orphaned file is a far
+        // smaller problem than a stuck, half-deleted project.
+        console.error(`Cloudinary delete failed for ${doc.cloudinaryPublicId}:`, err.message);
+      })
+    )
+  );
+
+  await Promise.all([
+    Update.deleteMany({ project: project._id }),
+    Document.deleteMany({ project: project._id }),
+    Payment.deleteMany({ project: project._id }),
+    Notification.deleteMany({ project: project._id }),
+  ]);
+
+  await project.deleteOne();
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, null, "Project and all related data permanently deleted"));
+});
 
 /**
  * PATCH /api/projects/:id/regenerate-portal-link

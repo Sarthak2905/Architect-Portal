@@ -8,6 +8,7 @@ import {
   archiveProject,
   restoreProject,
   regeneratePortalLink,
+  hardDeleteProject,
 } from "../controllers/project.controller.js";
 import { requireAuth } from "../middleware/auth.middleware.js";
 
@@ -22,5 +23,6 @@ router.patch("/:id/status", updateProjectStatus);
 router.delete("/:id", archiveProject);
 router.patch("/:id/restore", restoreProject);
 router.patch("/:id/regenerate-portal-link", regeneratePortalLink);
+router.delete("/:id/permanent", hardDeleteProject);
 
 export default router;

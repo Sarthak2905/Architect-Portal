@@ -91,3 +91,17 @@ export const useRestoreProject = () => {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["projects"] }),
   });
 };
+
+export const useHardDeleteProject = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (id) => {
+      const { data } = await axiosClient.delete(`/projects/${id}/permanent`);
+      return data.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["projects"] });
+      queryClient.invalidateQueries({ queryKey: ["dashboard"] });
+    },
+  });
+};
