@@ -4,6 +4,7 @@ import { DashboardPage } from "../pages/owner/DashboardPage";
 import { ClientsPage } from "../pages/owner/ClientsPage";
 import { ProjectsPage } from "../pages/owner/ProjectsPage";
 import { ProjectDetailPage } from "../pages/owner/ProjectDetailPage";
+import { SettingsPage } from "../pages/owner/SettingsPage";
 import { ProtectedRoute } from "./ProtectedRoute";
 import { OwnerLayout } from "../layouts/OwnerLayout";
 import { PortalLayout } from "../layouts/PortalLayout";
@@ -12,6 +13,7 @@ import { PortalTimelinePage } from "../pages/portal/PortalTimelinePage";
 import { PortalDocumentsPage } from "../pages/portal/PortalDocumentsPage";
 import { PortalPhotosPage } from "../pages/portal/PortalPhotosPage";
 import { PortalPaymentsPage } from "../pages/portal/PortalPaymentsPage";
+
 
 export const AppRoutes = () => {
     return (
@@ -31,6 +33,7 @@ export const AppRoutes = () => {
                 <Route path="/clients" element={<ClientsPage />} />
                 <Route path="/projects" element={<ProjectsPage />} />
                 <Route path="/projects/:id" element={<ProjectDetailPage />} />
+                <Route path="/settings" element={<SettingsPage />} />
             </Route>
 
             {/* Client portal — PUBLIC, sibling of the block above, NOT nested
